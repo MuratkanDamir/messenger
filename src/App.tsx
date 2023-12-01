@@ -5,13 +5,11 @@ import RegisterPage from "pages/RegisterPage";
 
 const App: React.FC = () => {
   return (
-    <div >
       <Routes>
         {/* <Route path="/" element={ <HomePage /> }/> */}
-        <Route path="/login" element={ <LoginPage /> }/>
-        <Route path="/" element={ <RegisterPage /> }/>
+        <Route path="/" element={ <LoginPage /> }/>
+        <Route path="/u" element={ <RegisterPage /> }/>
       </Routes>
-    </div>
   );
 }
 

@@ -14,7 +14,6 @@ interface IFormInput {
     email: string,
     username: string,
     password: string,
-    age: number,
 }
 
 const RegisterPage: React.FC = () =>{
