@@ -10,8 +10,9 @@ import { useState } from "react";
 import SuccessRegisterSnack from "components/SuccessRegisterSnack";
 import ErrorRegisterSnack from "components/ErrorRegisterSnack";
 import { Link } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "firebaseApp";
+import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "firebaseApp";
+import { addDoc, collection } from "firebase/firestore";
 
 interface IFormInput {
     email: string,
@@ -51,8 +52,13 @@ const RegisterPage: React.FC = () =>{
 
     const onSubmit: SubmitHandler<IFormInput> = async (data) =>{
         try{
-            await createUserWithEmailAndPassword(auth, data.email, data.password);
-            
+            const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+            const userId = userCredential.user.uid;
+
+            await addDoc(collection(db, "users"), {
+                id: userId,
+                username: data.username,
+              });
             reset();
             setSucRegSnackOpen(true);
         }catch(error: any){

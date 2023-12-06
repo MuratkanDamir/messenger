@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useSpring, animated } from 'react-spring';
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
+import Button from '@mui/material/Button';
+import { deleteUser } from 'store/slices/userSlice';
+import { useAppDispatch } from 'hooks/hooks';
 
 const style: React.CSSProperties = {
   display: 'flex',
@@ -26,6 +29,7 @@ const menuStyle: React.CSSProperties = {
 
 const FriendsList: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const dispatch = useAppDispatch()
 
   const menuAnimation = useSpring({
     opacity: isMenuOpen ? 1 : 0,
@@ -48,6 +52,8 @@ const FriendsList: React.FC = () => {
         (
           <animated.div style={{ ...menuStyle, ...menuAnimation }}>
             <div> Item 1</div>
+
+            <Button variant="contained" color="error" onClick={() => dispatch(deleteUser())} >Log out</Button>
           </animated.div>
         ):(
           <div>
