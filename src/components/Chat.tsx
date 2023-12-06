@@ -1,10 +1,15 @@
 import { useAppSelector } from "hooks/hooks";
 
-
+const style: React.CSSProperties = {
+    width:'70vw', 
+    minWidth:'400px',
+    height:'95vh',
+    minHeight: '500px',
+    backgroundColor:'violet'
+}
 const Chat: React.FC = () => {
-    const {email} = useAppSelector(state => state.user);
     return (
-        <div style={{width:'70vw', minWidth:'400px'}}>
+        <div style={style}>
             Chat
         </div>
     );

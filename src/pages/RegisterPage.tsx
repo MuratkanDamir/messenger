@@ -52,6 +52,7 @@ const RegisterPage: React.FC = () =>{
     const onSubmit: SubmitHandler<IFormInput> = async (data) =>{
         try{
             await createUserWithEmailAndPassword(auth, data.email, data.password);
+            
             reset();
             setSucRegSnackOpen(true);
         }catch(error: any){
