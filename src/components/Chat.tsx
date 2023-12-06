@@ -6,7 +6,6 @@ const Chat: React.FC = () => {
     return (
         <div>
             Chat
-            {email}
         </div>
     );
   }
