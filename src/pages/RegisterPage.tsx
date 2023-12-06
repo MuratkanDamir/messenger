@@ -9,6 +9,9 @@ import { useState } from "react";
 
 import SuccessRegisterSnack from "components/SuccessRegisterSnack";
 import ErrorRegisterSnack from "components/ErrorRegisterSnack";
+import { Link } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "firebaseApp";
 
 interface IFormInput {
     email: string,
@@ -27,12 +30,6 @@ const RegisterPage: React.FC = () =>{
         {mode: 'onBlur'}
     );
 
-    const onSubmit: SubmitHandler<IFormInput> = (data) =>{
-        console.log(data)
-        reset();
-        setSucRegSnackOpen(true);
-    };
-
     const [showPassword, setShowPassword] = useState(false);
     
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -43,6 +40,7 @@ const RegisterPage: React.FC = () =>{
 
     const [isSucRegSnackOpen, setSucRegSnackOpen] = useState(false);
     const [isErrorRegSnackOpen, setErrorRegSnackOpen] = useState(false);
+    const [isErrorText, setErrorText] = useState("");
 
     const customPstyles = {
         color: 'red',
@@ -51,8 +49,28 @@ const RegisterPage: React.FC = () =>{
         fontSize: '0.85em',
     };
 
+    const onSubmit: SubmitHandler<IFormInput> = async (data) =>{
+        try{
+            await createUserWithEmailAndPassword(auth, data.email, data.password);
+            reset();
+            setSucRegSnackOpen(true);
+        }catch(error: any){
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            if (errorCode === 'auth/email-already-in-use') {
+                console.error('User with this email already exists');
+                setErrorText("User with this email already exists")
+                setErrorRegSnackOpen(true);
+            } else {
+                console.error(errorMessage);
+                setErrorText("Registration")
+                setErrorRegSnackOpen(true);
+            }
+        }
+    };    
+
     return (
-        <div style={{width:'400px'}}>
+        <div style={{width:'400px', marginTop:'15vh'}}>
             <h1 style={{textAlign:'center'}}> Register </h1>
             <form onSubmit={handleSubmit( onSubmit )} style={{display:'flex', flexDirection:'column', gap:'20px'}}>
                 <div>
@@ -126,8 +144,12 @@ const RegisterPage: React.FC = () =>{
                     </TextField>
                         {errors.password && ( <p style={customPstyles}> {errors.password.message} </p>)}
                 </div>
+                <Button style={{width:'100px', fontSize:'0.7em'}}size="small" variant="contained" onClick={ () => reset() }>Clear Form</Button>
                 <Button disabled={!isValid} variant="contained" color="success" type="submit">Submit</Button>
+                <b style={{marginLeft:'10px'}}><i>Already have an account <Link to="/login"> login</Link> </i></b>
             </form>
+            
+
             <SuccessRegisterSnack
                 isOpen={isSucRegSnackOpen}
                 handleClose={() => setSucRegSnackOpen(false)}
@@ -135,6 +157,7 @@ const RegisterPage: React.FC = () =>{
             <ErrorRegisterSnack
                 isOpen={isErrorRegSnackOpen}
                 handleClose={() => setErrorRegSnackOpen(false)}
+                text={isErrorText}
             />
         </div>
     );

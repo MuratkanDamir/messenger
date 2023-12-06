@@ -4,15 +4,14 @@ import Alert from '@mui/material/Alert';
 interface RegisterSnackProps{
     isOpen: boolean,
     handleClose: () => void,
-    text: string,
 }
 
-const ErrorRegisterSnack: React.FC<RegisterSnackProps> = ({isOpen , handleClose, text}) =>{
+const ErrorLoginSnack: React.FC<RegisterSnackProps> = ({isOpen , handleClose}) =>{
     return (
         <Snackbar open={isOpen} autoHideDuration={3000} onClose={handleClose}>
-            <Alert onClose={handleClose} variant="filled" severity="error"> {text} </Alert>
+            <Alert onClose={handleClose} variant="filled" severity="error"> Invalid login or password</Alert>
       </Snackbar>
     );
 }
 
-export default ErrorRegisterSnack;
+export default ErrorLoginSnack;

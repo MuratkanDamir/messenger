@@ -6,16 +6,20 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "hooks/hooks";
+import { fetchUser } from "store/slices/userSlice";
+import ErrorLoginSnack from "components/ErrorLoginSnack";
 
 
 interface IFormInput {
     email: string,
-    username: string,
     password: string,
 }
 
 const LoginPage: React.FC = () =>{
-
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const {
         register,
         formState: { errors, isValid }, 
@@ -25,9 +29,23 @@ const LoginPage: React.FC = () =>{
         {mode: 'onBlur'}
     );
 
-    const onSubmit: SubmitHandler<IFormInput> = (data) =>{
-        console.log(data)
-        reset();
+    const [errorSnackOpen, setErrorSnackOpen] = useState(false);
+
+    const onSubmit: SubmitHandler<IFormInput> = async (data) =>{
+        const info = {
+            email: data.email,
+            password: data.password,
+        }
+        try{
+            await dispatch(fetchUser(info));
+            reset();
+            navigate("/");
+        }catch(error){
+            console.log("errorrrrrrrr");
+            setErrorSnackOpen(true);
+            reset();
+        }
+
     };
 
     const [showPassword, setShowPassword] = useState(false);
@@ -47,7 +65,7 @@ const LoginPage: React.FC = () =>{
     };
 
     return (
-        <div style={{width:'400px'}}>
+        <div style={{width:'400px', marginTop:'15vh'}}>
             <h1 style={{textAlign:'center'}}> Login </h1>
             <form onSubmit={handleSubmit( onSubmit )} style={{display:'flex', flexDirection:'column', gap:'20px'}}>
                 <div>
@@ -87,7 +105,12 @@ const LoginPage: React.FC = () =>{
                         {errors.password && ( <p style={customPstyles}> {errors.password.message} </p>)}
                 </div>
                 <Button disabled={!isValid} variant="contained" color="success" type="submit">Submit</Button>
+                <b style={{marginLeft:'10px'}}><i>Don`t have an account <Link to="/register"> register</Link> </i></b>
             </form>
+            <ErrorLoginSnack
+                isOpen={errorSnackOpen}
+                handleClose={() => setErrorSnackOpen(false)}
+            />
         </div>
     );
 }
