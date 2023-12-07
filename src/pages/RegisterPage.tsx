@@ -12,7 +12,7 @@ import ErrorRegisterSnack from "components/ErrorRegisterSnack";
 import { Link } from "react-router-dom";
 import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "firebaseApp";
-import { addDoc, collection } from "firebase/firestore";
+import { doc, addDoc, collection, setDoc } from "firebase/firestore";
 
 interface IFormInput {
     email: string,
@@ -53,12 +53,26 @@ const RegisterPage: React.FC = () =>{
     const onSubmit: SubmitHandler<IFormInput> = async (data) =>{
         try{
             const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-            const userId = userCredential.user.uid;
+            const userDocRef = doc(db, "users", userCredential.user.uid);
 
-            await addDoc(collection(db, "users"), {
-                id: userId,
+            const userData = {
                 username: data.username,
-              });
+                age: null,
+                avatarURL: null,
+                userId: userCredential.user.uid,
+            };
+            // Создание документа с определенным идентификатором
+            await setDoc(userDocRef, userData);
+            
+            // //Создание подколлекции
+            // const subCollectionRef = collection(userDocRef, 'chats');
+            // const subCollectionData = {
+            //     // ваша информация
+            //   };
+            
+            //   // Добавление подколлекции в документ
+            // await addDoc(subCollectionRef, subCollectionData);
+
             reset();
             setSucRegSnackOpen(true);
         }catch(error: any){

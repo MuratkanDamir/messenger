@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { auth } from "firebaseApp";
+import { auth, db } from "firebaseApp";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, DocumentData, getDoc } from "firebase/firestore";
 
 type User = {
     id: null | string,
@@ -23,12 +24,17 @@ export const fetchUser = createAsyncThunk(
         try{
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const userToken = await userCredential.user.getIdToken();
-
+            
+            const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
+            let username: string = "user";
+            if(docSnap.exists()){
+                username = docSnap.data().username;
+            };
             return  {
                 id: userCredential.user.uid, 
                 email: email, 
                 token: userToken,
-                username: "user", 
+                username: username, 
             }
         }catch(error){
             console.log(error)

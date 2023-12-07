@@ -4,18 +4,19 @@ import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 import Button from '@mui/material/Button';
 import { deleteUser } from 'store/slices/userSlice';
 import { useAppDispatch } from 'hooks/hooks';
+import Profile from 'components/Profile';
+import Chats from 'components/Chats';
+import Search from 'components/Search';
 
 const style: React.CSSProperties = {
+  paddingTop:'10px',
   display: 'flex',
   flexDirection: 'column',
   width: '30vw',
   minWidth: '200px',
-  height: '95vh',
-  minHeight: '500px',
+  height:'100%',
   backgroundColor: 'blue',
 };
-
-
 const btnStyle={
   width: '35px', 
   height: '35px' ,
@@ -27,7 +28,7 @@ const menuStyle: React.CSSProperties = {
   zIndex: 1,
 };
 
-const FriendsList: React.FC = () => {
+const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch()
 
@@ -44,21 +45,19 @@ const FriendsList: React.FC = () => {
           style={btnStyle}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         />
-        <input type="text" />
+        <Search />
       </div>
 
       <div style={style}>
         {isMenuOpen? 
         (
           <animated.div style={{ ...menuStyle, ...menuAnimation }}>
-            <div> Item 1</div>
+            <Profile />
 
             <Button variant="contained" color="error" onClick={() => dispatch(deleteUser())} >Log out</Button>
           </animated.div>
         ):(
-          <div>
-            List
-          </div>
+          <Chats />
         )
 
         }    
@@ -68,4 +67,4 @@ const FriendsList: React.FC = () => {
   );
 };
 
-export default FriendsList;
+export default Navbar;

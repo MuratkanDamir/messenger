@@ -1,14 +1,15 @@
-import FriendsList from "components/FriendsList";
+import Navbar from "components/Navbar";
 import Chat from "components/Chat";
 
 const style: React.CSSProperties = {
     display: 'flex',
+    height:'100vh',
 }
 
 const MainComponent: React.FC = () => {
     return (
         <div style={style}>
-            <FriendsList />
+            <Navbar />
             <Chat />
         </div>
     );

@@ -3,8 +3,6 @@ import { useAppSelector } from "hooks/hooks";
 const style: React.CSSProperties = {
     width:'70vw', 
     minWidth:'400px',
-    height:'95vh',
-    minHeight: '500px',
     backgroundColor:'violet'
 }
 const Chat: React.FC = () => {
