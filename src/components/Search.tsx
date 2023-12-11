@@ -43,11 +43,13 @@ const Search: React.FC = () => {
         }
         try {
             const chatsCollectionRef = collection(db, 'chats');
-            const newChatDocRef = await addDoc(chatsCollectionRef, data);
+            // if(){
+                const newChatDocRef = await addDoc(chatsCollectionRef, data);
 
-            // Добавить подколлекцию в новый документ чата
-            const messagesCollectionRef = collection(newChatDocRef, 'messages');
-            await addDoc(messagesCollectionRef, {});
+                // Добавить подколлекцию в новый документ чата
+                const messagesCollectionRef = collection(newChatDocRef, 'messages');
+                await addDoc(messagesCollectionRef, {});
+            // };
         } catch (error) {
             console.error("Error adding chat:", error);
         }

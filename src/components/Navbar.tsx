@@ -7,6 +7,7 @@ import { useAppDispatch } from 'hooks/hooks';
 import Profile from 'components/Profile';
 import Chats from 'components/Chats';
 import Search from 'components/Search';
+import { deleteChat } from 'store/slices/chatSlice';
 
 const style: React.CSSProperties = {
   paddingTop:'10px',
@@ -54,7 +55,10 @@ const Navbar: React.FC = () => {
           <animated.div style={{ ...menuStyle, ...menuAnimation }}>
             <Profile />
 
-            <Button variant="contained" color="error" onClick={() => dispatch(deleteUser())} >Log out</Button>
+            <Button variant="contained" color="error" onClick={() => {
+                dispatch(deleteUser())
+                dispatch(deleteChat())
+            }} >Log out</Button>
           </animated.div>
         ):(
           <Chats />
