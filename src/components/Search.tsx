@@ -42,7 +42,12 @@ const Search: React.FC = () => {
             user2: userId,
         }
         try {
-            await addDoc(collection(db, 'chats'), data);
+            const chatsCollectionRef = collection(db, 'chats');
+            const newChatDocRef = await addDoc(chatsCollectionRef, data);
+
+            // Добавить подколлекцию в новый документ чата
+            const messagesCollectionRef = collection(newChatDocRef, 'messages');
+            await addDoc(messagesCollectionRef, {});
         } catch (error) {
             console.error("Error adding chat:", error);
         }

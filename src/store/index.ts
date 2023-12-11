@@ -1,4 +1,5 @@
 import userReducer from "./slices/userSlice";
+import chatReducer from "./slices/chatSlice";
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import {
   persistStore,
@@ -14,21 +15,22 @@ import {
 
 import storage from 'redux-persist/lib/storage';
 
-const rootReducer = combineReducers({
-    user:userReducer,
-});
+
 
 const persistConfig = {
     key: 'root',
     storage,
 };
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedUserReducer = persistReducer(persistConfig, userReducer);
 
-
+const rootReducer = combineReducers({
+    user: persistedUserReducer,
+    chat: chatReducer,
+});
 
 const store = configureStore({
-    reducer: persistedReducer,
+    reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {

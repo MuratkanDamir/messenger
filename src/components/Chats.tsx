@@ -4,10 +4,12 @@ import Avatar from '@mui/material/Avatar';
 import { db } from "firebaseApp";
 import { doc, addDoc, collection, getDocs, query , where,onSnapshot} from "firebase/firestore";
 import { useAppDispatch, useAppSelector } from "hooks/hooks";
+import ChatItem from "./ChatItem";
 
 interface Chat{
     user1: string,
     user2: string,
+    chatId: string,
 }
 
 const Chats: React.FC = () => {
@@ -23,8 +25,13 @@ const Chats: React.FC = () => {
             await onSnapshot(q, (querySnapshot) => {
                 const tempChats: Chat[] = [];
                 querySnapshot.forEach((doc) => {
-                    const userChat: Chat = doc.data() as Chat;
-                    
+                    const userChatData = doc.data() as Chat;
+                    const userChat: Chat = {
+                      chatId: doc.id,
+                      user1: userChatData.user1,
+                      user2: userChatData.user2,
+                    };
+                    console.log("chats:",userChat);
                     tempChats.push(userChat);
                 });
                 setChats(tempChats);
@@ -44,10 +51,7 @@ const Chats: React.FC = () => {
             Chats
             {
                 chats.map((user, index)=>(
-                    <div key={index} style = {{display:'flex', alignItems:'center', gap:'5px'}}>
-                        <Avatar>H</Avatar>
-                        {user.user1 == id? user.user2: user.user1}
-                    </div>
+                    <ChatItem key={index} chatId={user.chatId} friendId={user.user1 == id? user.user2: user.user1} />
                 ))
             }
         </div>

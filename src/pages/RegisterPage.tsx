@@ -63,16 +63,6 @@ const RegisterPage: React.FC = () =>{
             };
             // Создание документа с определенным идентификатором
             await setDoc(userDocRef, userData);
-            
-            // //Создание подколлекции
-            // const subCollectionRef = collection(userDocRef, 'chats');
-            // const subCollectionData = {
-            //     // ваша информация
-            //   };
-            
-            //   // Добавление подколлекции в документ
-            // await addDoc(subCollectionRef, subCollectionData);
-
             reset();
             setSucRegSnackOpen(true);
         }catch(error: any){
@@ -92,7 +82,7 @@ const RegisterPage: React.FC = () =>{
 
     return (
         <div style={{width:'400px', marginTop:'15vh'}}>
-            <h1 style={{textAlign:'center'}}> Register </h1>
+            <h1 style={{textAlign:'center',marginBottom:'30px'}}> Register </h1>
             <form onSubmit={handleSubmit( onSubmit )} style={{display:'flex', flexDirection:'column', gap:'20px'}}>
                 <div>
                     <TextField

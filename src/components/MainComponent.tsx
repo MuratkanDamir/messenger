@@ -1,5 +1,5 @@
 import Navbar from "components/Navbar";
-import Chat from "components/Chat";
+import ChatComponent from "components/ChatComponent";
 
 const style: React.CSSProperties = {
     display: 'flex',
@@ -10,7 +10,7 @@ const MainComponent: React.FC = () => {
     return (
         <div style={style}>
             <Navbar />
-            <Chat />
+            <ChatComponent />
         </div>
     );
   }
