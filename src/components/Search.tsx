@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import {useState, useEffect} from "react";
 
 import { db } from "firebaseApp";
-import { doc, setDoc,addDoc, collection, getDocs, query , where} from "firebase/firestore";
+import { addDoc, collection, getDocs, query } from "firebase/firestore";
 import { useAppSelector } from 'hooks/hooks';
 
 interface UserData {
@@ -11,28 +11,38 @@ interface UserData {
     userId: string;
 }
 
-
-
 const Search: React.FC = () => {
     const [searchedUsername, setSearchedUsername] = useState("")
+    const [fullUsers, setFullUsers] = useState<UserData []>([])
     const [users, setUsers] = useState<UserData[]>([]);
 
-    const updateUsers = async() =>{
-        const q = query(collection(db, 'users'), where('username', '==', searchedUsername));
-        // Выполнение запроса
+    const fetchUsers = async () =>{
+        const q = query(collection(db, 'users'));
+
         const querySnapshot = await getDocs(q);
-            let usersList: UserData[] = [];
-            // Обработка результатов запроса
-            querySnapshot.forEach((doc) => {
-                const userData: UserData = doc.data() as UserData;
-                usersList.push(userData);
-            });
-            setUsers(usersList);
+        let usersList: UserData[] = [];
+        querySnapshot.forEach((doc) => {
+            const userData: UserData = doc.data() as UserData;
+            usersList.push(userData);
+        });
+        setFullUsers(usersList);
+    }
+
+    const updateUsers = () =>{
+        if (searchedUsername.trim() !== '') {
+            const regex = new RegExp(`^${searchedUsername}.+$`, 'i');
+            const res = fullUsers.filter(  (user) => user.username.match(regex) !== null)  ;
+            setUsers(res);
+        }
     }
 
     useEffect(() => {
+        fetchUsers();
+    },[]);
+
+    useEffect(() => {
         updateUsers();
-    },[users]);
+    },[searchedUsername]);
 
     const {id} =  useAppSelector(state => state.user);
 
@@ -43,13 +53,9 @@ const Search: React.FC = () => {
         }
         try {
             const chatsCollectionRef = collection(db, 'chats');
-            // if(){
-                const newChatDocRef = await addDoc(chatsCollectionRef, data);
-
-                // Добавить подколлекцию в новый документ чата
-                const messagesCollectionRef = collection(newChatDocRef, 'messages');
-                await addDoc(messagesCollectionRef, {});
-            // };
+            const newChatDocRef = await addDoc(chatsCollectionRef, data);
+            const messagesCollectionRef = collection(newChatDocRef, 'messages');
+            await addDoc(messagesCollectionRef, {});
         } catch (error) {
             console.error("Error adding chat:", error);
         }
@@ -64,7 +70,10 @@ const Search: React.FC = () => {
                     color="info"
                     value = {searchedUsername}
                     onChange={(e) => setSearchedUsername(e.target.value)}
-                    onBlur={() => setSearchedUsername("")}
+                    onBlur={() => {
+                        setSearchedUsername("") 
+                        setUsers([])
+                    }}
                 />
             </div>
             <div>

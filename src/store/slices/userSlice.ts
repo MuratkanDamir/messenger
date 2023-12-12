@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { auth, db } from "firebaseApp";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, DocumentData, getDoc } from "firebase/firestore";
+import { doc,  getDoc } from "firebase/firestore";
 
 type User = {
     id: null | string,
@@ -37,7 +37,6 @@ export const fetchUser = createAsyncThunk(
                 username: username, 
             }
         }catch(error){
-            console.log(error)
             throw error;
         }
     }

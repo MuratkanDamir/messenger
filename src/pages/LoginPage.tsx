@@ -7,7 +7,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "hooks/hooks";
+import { useAppDispatch } from "hooks/hooks";
 import { fetchUser } from "store/slices/userSlice";
 import ErrorLoginSnack from "components/ErrorLoginSnack";
 
@@ -41,7 +41,6 @@ const LoginPage: React.FC = () =>{
             reset();
             navigate("/");
         }catch(error){
-            console.log("errorrrrrrrr");
             setErrorSnackOpen(true);
             reset();
         }

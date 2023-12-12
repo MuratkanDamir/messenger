@@ -1,11 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-type Message = {
-    createdAt: null | string,
-    text: null | string,
-    creator: null | string, 
-}
 type Chat = {
     friendId: string | null,
     chatId: string | null,  

@@ -3,7 +3,6 @@
     opacity: 0;
 }
 
-/* ползунок скроллбара */
 ::-webkit-scrollbar-thumb {
     background-color: #7E30E1;
     border-radius: 9em;

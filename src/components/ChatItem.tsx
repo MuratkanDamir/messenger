@@ -1,10 +1,11 @@
 import Avatar from '@mui/material/Avatar';
-import { collection, doc, DocumentSnapshot, getDoc } from 'firebase/firestore';
+import { doc, DocumentSnapshot, getDoc } from 'firebase/firestore';
 import { db } from 'firebaseApp';
 import { useEffect, useState } from 'react';
 import styles from "components/ChatItem.module.css";
 import { useAppDispatch } from 'hooks/hooks';
 import { setChat } from 'store/slices/chatSlice';
+
 interface ChatItemProps {
     chatId: string ,
     friendId: string,

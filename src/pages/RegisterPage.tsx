@@ -12,7 +12,7 @@ import ErrorRegisterSnack from "components/ErrorRegisterSnack";
 import { Link } from "react-router-dom";
 import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "firebaseApp";
-import { doc, addDoc, collection, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 
 interface IFormInput {
     email: string,
@@ -61,7 +61,6 @@ const RegisterPage: React.FC = () =>{
                 avatarURL: null,
                 userId: userCredential.user.uid,
             };
-            // Создание документа с определенным идентификатором
             await setDoc(userDocRef, userData);
             reset();
             setSucRegSnackOpen(true);

@@ -1,8 +1,8 @@
 import {useState, useEffect} from "react";
 
 import { db } from "firebaseApp";
-import { doc, addDoc, collection, getDocs, query , where,onSnapshot} from "firebase/firestore";
-import { useAppDispatch, useAppSelector } from "hooks/hooks";
+import { collection, query , where,onSnapshot} from "firebase/firestore";
+import { useAppSelector } from "hooks/hooks";
 import ChatItem from "./ChatItem";
 
 interface Chat{
