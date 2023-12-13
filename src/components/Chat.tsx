@@ -35,6 +35,7 @@ const friendMesStyle: React.CSSProperties = {
     gap: '15px',
     border: '1px solid green',
     borderRadius: '0px 25px 25px 25px',
+    wordBreak:'break-word',
 }
 
 
@@ -59,11 +60,12 @@ const Chat: React.FC = () => {
                     text: text,
                     createdAt: Timestamp.now().toDate().toISOString(),
                 }
+                setText("");
                 await addDoc(messagesCollectionRef, newMessageData);
             }else{
                 throw Error;
             };
-            setText("");
+            
         }catch(error){
             console.log(error);
         }

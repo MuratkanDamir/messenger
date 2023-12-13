@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react";
 
 import { db } from "firebaseApp";
-import { collection, query , where,onSnapshot} from "firebase/firestore";
+import { collection, query , where,onSnapshot, or} from "firebase/firestore";
 import { useAppSelector } from "hooks/hooks";
 import ChatItem from "./ChatItem";
 
@@ -18,15 +18,10 @@ const Chats: React.FC = () => {
     const getChats = () => {
         const q = query(
             collection(db, 'chats'),
-            where('user1', '==', id)
+            or(where( 'user1', '==', id),where( 'user2', '==', id))
         );
 
-        const q2 = query(
-            collection(db, 'chats'),
-            where('user2', '==', id)
-        );
-
-        const unsubscribe1 = onSnapshot(q, (querySnapshot1) => {
+        const unsubscribe = onSnapshot(q, (querySnapshot1) => {
             const tempChats: Chat[] = [];
             querySnapshot1.forEach((doc) => {
                 const userChatData = doc.data() as Chat;
@@ -35,38 +30,19 @@ const Chats: React.FC = () => {
                     user1: userChatData.user1,
                     user2: userChatData.user2,
                 };
-                tempChats.push(userChat);
+                tempChats.push({...userChat});
             });
-
-            setChats((prevChats) => [...prevChats, ...tempChats]);
+            setChats(tempChats);
         });
 
-        const unsubscribe2 = onSnapshot(q2, (querySnapshot2) => {
-            const tempChats: Chat[] = [];
-            querySnapshot2.forEach((doc) => {
-                const userChatData = doc.data() as Chat;
-                const userChat: Chat = {
-                    chatId: doc.id,
-                    user1: userChatData.user1,
-                    user2: userChatData.user2,
-                };
-                tempChats.push(userChat);
-            });
-
-            setChats((prevChats) => [...prevChats, ...tempChats]);
-        });
 
         return () => {
-            unsubscribe1();
-            unsubscribe2();
+            unsubscribe()
         };
     };
 
     useEffect(() => {
-        const unsubscribe = getChats();
-        return () => {
-            unsubscribe();
-        };
+        getChats();
     }, []); 
 
     const i = useAppSelector(state => state.chat.chatId);

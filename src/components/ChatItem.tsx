@@ -36,16 +36,18 @@ const ChatItem: React.FC<ChatItemProps> = (props) =>{
 
     useEffect(() => {
         getUserInfo(props.friendId);
-    },[])
+    },[props.friendId])
+
+    
     return (
         props.isActive?
         (<div className={styles.activeMain} onClick={() => dispatch(setChat({ chatId: props.chatId, friendId: props.friendId }))}>
-            <Avatar>H</Avatar>
+            <Avatar></Avatar>
             {user && <p>{user.username}</p>}
         </div>)
         :
         (<div className={styles.nonActiveMain} onClick={() => dispatch(setChat({ chatId: props.chatId, friendId: props.friendId }))}>
-            <Avatar>H</Avatar>
+            <Avatar></Avatar>
             {user && <p>{user.username}</p>}
         </div>)
     )

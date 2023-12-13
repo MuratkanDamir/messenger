@@ -3,13 +3,15 @@ import Button from '@mui/material/Button';
 import {useState, useEffect} from "react";
 
 import { db } from "firebaseApp";
-import { addDoc, collection, getDocs, query } from "firebase/firestore";
+import { doc, setDoc,addDoc, collection, getDocs, query , where, onSnapshot} from "firebase/firestore";
 import { useAppSelector } from 'hooks/hooks';
 
 interface UserData {
     username: string;
     userId: string;
 }
+
+
 
 const Search: React.FC = () => {
     const [searchedUsername, setSearchedUsername] = useState("")
@@ -18,23 +20,34 @@ const Search: React.FC = () => {
 
     const fetchUsers = async () =>{
         const q = query(collection(db, 'users'));
-
-        const querySnapshot = await getDocs(q);
+        
         let usersList: UserData[] = [];
-        querySnapshot.forEach((doc) => {
-            const userData: UserData = doc.data() as UserData;
-            usersList.push(userData);
+        const unsubscribe =  onSnapshot(q, (querySnapshot) => {            
+            querySnapshot.forEach((doc) => {
+                const userData: UserData = doc.data() as UserData;
+                usersList.push(userData);
+            });
+            setFullUsers(usersList);
         });
-        setFullUsers(usersList);
-    }
+          
+        return () => {
+            unsubscribe();
+        };
+    };
+    
 
     const updateUsers = () =>{
+        
         if (searchedUsername.trim() !== '') {
-            const regex = new RegExp(`^${searchedUsername}.+$`, 'i');
+            const regex = new RegExp(`^${searchedUsername}`, 'i');
             const res = fullUsers.filter(  (user) => user.username.match(regex) !== null)  ;
-            setUsers(res);
+            setUsers(res );
+        }else{
+            setUsers([] );
         }
     }
+
+    
 
     useEffect(() => {
         fetchUsers();
@@ -60,6 +73,7 @@ const Search: React.FC = () => {
             console.error("Error adding chat:", error);
         }
         setSearchedUsername("");
+        setUsers([])
     }
     return (
         <div>
@@ -71,20 +85,19 @@ const Search: React.FC = () => {
                     value = {searchedUsername}
                     onChange={(e) => setSearchedUsername(e.target.value)}
                     onBlur={() => {
-                        setSearchedUsername("") 
-                        setUsers([])
+                        setSearchedUsername("")
                     }}
                 />
             </div>
             <div>
                 {
                     users.map((user, index) =>(
-                        <div key={index}>
+                        <div key={index} style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center',padding:'5px', border:'1px solid black',    wordBreak:'break-word',}}>
                             {user.username}
                             <Button 
                                 variant="contained"
                                 color='success'
-                                style={{width:'20px', height:'10px', fontSize:'.6em'}}
+                                style={{width:'20px', height:'15px', fontSize:'.6em'}}
                                 onClick = {() => addChat(user.userId)}
                             >type</Button>
                         </div>
