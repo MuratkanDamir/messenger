@@ -1,16 +1,21 @@
 import Avatar from '@mui/material/Avatar';
 import SendIcon from '@mui/icons-material/Send';
-import { addDoc, Timestamp } from "firebase/firestore";
-import { db } from "firebaseApp";
+import { db, storage } from "firebaseApp";
 import TextField from '@mui/material/TextField';
 import { useAppSelector } from 'hooks/hooks';
 import { useEffect, useState } from 'react';
-import { collection, doc, getDocs, onSnapshot, orderBy, query} from "firebase/firestore";
+import { collection, doc, onSnapshot, orderBy, query, addDoc, getDoc, Timestamp} from "firebase/firestore";
 import "./Chat.css";
+import { getDownloadURL, ref } from 'firebase/storage';
 type Message = {
     createdAt: null | string,
     text: null | string,
     creator: null | string, 
+}
+
+type FriendData = {
+    userId: string | null,
+    username: string | null,
 }
 
 const myMesStyle: React.CSSProperties = {
@@ -42,12 +47,13 @@ const friendMesStyle: React.CSSProperties = {
 const Chat: React.FC = () => {
 
     const [messages, setMessages] = useState<Message []>([]);
-    const { chatId } = useAppSelector(state => state.chat)
+    const { chatId, friendId } = useAppSelector(state => state.chat)
     const [text, setText] =  useState("");
-    
+    const [profileImageUrl, setProfileImageUrl] = useState<string>("");
+    const [friendProfileImageUrl, setFriendProfileImageUrl] = useState<string>("");
     const {id} = useAppSelector( state => state.user);
-
-
+   
+    const [ friendName , setFriendName ] = useState("");
     const submitForm = async (e: React.FormEvent) =>{
         e.preventDefault();
         
@@ -72,6 +78,26 @@ const Chat: React.FC = () => {
 
     }
 
+    const fetchFriendName = async () =>{
+        if (friendId != null){
+            const docRef = doc(db, "users", friendId);
+            try{
+                const docSnapshot = await getDoc( docRef );
+                const friendData: FriendData | undefined = docSnapshot.data() as FriendData | undefined;
+                if (friendData && friendData.username) {
+                    setFriendName(friendData.username);
+                    console.log(friendData.username);
+                } else {
+                    console.log("Friend data does not contain username");
+                }
+            }catch(error){
+                console.log("Fetch friendName Error")
+            }
+        }else{
+            console.log("Friend id is null");
+        }
+    }
+    
 
     const fetchMessages = async () => {
         try {
@@ -102,21 +128,52 @@ const Chat: React.FC = () => {
       };
     
         useEffect(() => {
-            fetchMessages();
-        }, [chatId]);
+            fetchFriendName();
 
+            fetchMessages();
+            
+            getDownloadURL(ref(storage, `profileImages/${id}`)).then((url) =>{
+                setProfileImageUrl(url);
+            }).catch((error) => {
+                console.log("not found Profile Image")
+                setProfileImageUrl("");
+            })
+
+            getDownloadURL(ref(storage, `profileImages/${friendId}`)).then((url) =>{
+                setFriendProfileImageUrl(url);
+            }).catch((error) => {
+                console.log("not found Friend Profile Image")
+                setFriendProfileImageUrl("");
+            })
+        }, [chatId]);
 
 
     return (
         <div style={{width:'100%', height:'100%', minHeight:'100vh', padding:'20px', display:'flex', flexDirection:'column', gap:'10px'}}>
-            <h2>messages</h2>
+            <div style={{display:'flex', gap:'20px'}}>
+                { friendProfileImageUrl == "" ? (<Avatar sx={{ width: 36, height: 36 }} ></Avatar>) : (<Avatar sx={{ width: 36, height: 36 }} src={friendProfileImageUrl}></Avatar>)}
+                <h2> {friendName} </h2>
+            </div>
             <hr style={{backgroundColor :'#b7d0e2', marginTop:'10px', marginBottom:'10px'}}/>
             <div style={{padding:'10px', height:'80%' , display: 'flex', flexDirection:'column', gap:'10px', overflowY: "auto"}}>
                 {
                     messages.map((m, index)=>(
                         id === m.creator?
-                        (<div key = {index} style={myMesStyle} >  <Avatar>Me</Avatar> <p>{m.text}</p>   </div>):
-                        (<div key = {index} style={friendMesStyle} > <Avatar>A</Avatar> <p>{m.text}</p>   </div>)
+                        (<div 
+                            key = {index} 
+                            style={myMesStyle} >
+                            { profileImageUrl == "" ? (<Avatar></Avatar>) : (<Avatar src={profileImageUrl}></Avatar>)} 
+                            <p>{m.text}</p>   
+                        </div>
+                        )
+                        :
+                        (<div 
+                            key = {index} 
+                            style={friendMesStyle} > 
+                            { friendProfileImageUrl == "" ? (<Avatar></Avatar>) : (<Avatar src={friendProfileImageUrl}></Avatar>)}
+                            <p>{m.text}</p>   
+                        </div>
+                        )
                     ))
                 }
             </div>

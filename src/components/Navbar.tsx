@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { useSpring, animated } from 'react-spring';
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
-import Button from '@mui/material/Button';
-import { deleteUser } from 'store/slices/userSlice';
 import { useAppDispatch } from 'hooks/hooks';
 import Profile from 'components/Profile';
 import Chats from 'components/Chats';
 import Search from 'components/Search';
-import { deleteChat } from 'store/slices/chatSlice';
 
 const style: React.CSSProperties = {
   paddingTop:'10px',
@@ -31,7 +28,6 @@ const menuStyle: React.CSSProperties = {
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const dispatch = useAppDispatch()
 
   const menuAnimation = useSpring({
     opacity: isMenuOpen ? 1 : 0,
@@ -54,11 +50,6 @@ const Navbar: React.FC = () => {
         (
           <animated.div style={{ ...menuStyle, ...menuAnimation }}>
             <Profile />
-
-            <Button variant="contained" color="error" onClick={() => {
-                dispatch(deleteUser())
-                dispatch(deleteChat())
-            }} >Log out</Button>
           </animated.div>
         ):(
           <Chats />

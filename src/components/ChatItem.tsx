@@ -1,10 +1,11 @@
 import Avatar from '@mui/material/Avatar';
 import { doc, DocumentSnapshot, getDoc } from 'firebase/firestore';
-import { db } from 'firebaseApp';
+import { db, storage } from 'firebaseApp';
 import { useEffect, useState } from 'react';
 import styles from "components/ChatItem.module.css";
-import { useAppDispatch } from 'hooks/hooks';
+import { useAppDispatch, useAppSelector } from 'hooks/hooks';
 import { setChat } from 'store/slices/chatSlice';
+import { getDownloadURL , ref} from 'firebase/storage';
 
 interface ChatItemProps {
     chatId: string ,
@@ -19,6 +20,12 @@ const ChatItem: React.FC<ChatItemProps> = (props) =>{
 
     const [user, setUser] = useState<userObject | null>(null);
     const dispatch = useAppDispatch();
+
+    const imageRef = ref(storage, `profileImages/${props.friendId}`);
+    
+    const [profileImageUrl, setProfileImageUrl] = useState<string>("");
+
+
     async function getUserInfo(id: string){
         try{
             const friendSnapshot: DocumentSnapshot = await getDoc( doc(db, "users", id) );
@@ -36,20 +43,23 @@ const ChatItem: React.FC<ChatItemProps> = (props) =>{
 
     useEffect(() => {
         getUserInfo(props.friendId);
+        getDownloadURL(imageRef).then((url) =>{
+            setProfileImageUrl(url);
+        }).catch((error) => {
+            console.log("not found Profile Image")
+            setProfileImageUrl("");
+        })
     },[props.friendId])
 
-    
     return (
-        props.isActive?
-        (<div className={styles.activeMain} onClick={() => dispatch(setChat({ chatId: props.chatId, friendId: props.friendId }))}>
-            <Avatar></Avatar>
+        <div className={props.isActive ? styles.activeMain : styles.nonActiveMain} onClick={() => dispatch(setChat({ chatId: props.chatId, friendId: props.friendId }))}>
+                {profileImageUrl == ""? 
+                (<Avatar></Avatar>)
+                :
+                (<Avatar src={profileImageUrl}></Avatar>)
+            }
             {user && <p>{user.username}</p>}
-        </div>)
-        :
-        (<div className={styles.nonActiveMain} onClick={() => dispatch(setChat({ chatId: props.chatId, friendId: props.friendId }))}>
-            <Avatar></Avatar>
-            {user && <p>{user.username}</p>}
-        </div>)
+        </div>
     )
 }
 

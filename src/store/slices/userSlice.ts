@@ -8,13 +8,15 @@ type User = {
     id: null | string,
     token: null | string,
     email: null | string,
-    username: null | string,    
+    username: null | string,
+    profileImgUrl: string,    
 }
 const initialState: User = {
     id: null,
     token: null,
     email: null,
     username: null,
+    profileImgUrl: "",
 }
 
 
@@ -30,11 +32,14 @@ export const fetchUser = createAsyncThunk(
             if(docSnap.exists()){
                 username = docSnap.data().username;
             };
+
+            
             return  {
                 id: userCredential.user.uid, 
                 email: email, 
                 token: userToken,
-                username: username, 
+                username: username,
+                profileImgUrl: "" 
             }
         }catch(error){
             throw error;
